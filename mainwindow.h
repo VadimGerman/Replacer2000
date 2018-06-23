@@ -9,6 +9,8 @@
 #include <QLineEdit>
 #include <QListView>
 #include <QMessageBox>
+#include <QFileDialog>
+#include <QStandardItem>
 
 
 class MainWindow : public QMainWindow
@@ -30,16 +32,29 @@ class MainWindow : public QMainWindow
     QPushButton *pbAddFile;
     QPushButton *pbRemoveFD;        // File or directory.
 
+    // List of directories and files for search.
     QListView *lvDirs;
+
+    // Search or replace result list.
     QListView *lvResult;
+
+    // Data models.
+    QStandardItemModel *m_dirsAndFilesModel;
+    QStandardItemModel *m_resultModel;
+
 
     void initLayouts();
 
 public slots:
     void searchClicked();
     void replaceClicked();
+
+    // Add directory to lvDirs list.
     void addDirClicked();
+    //
     void addFileClicked();
+
+    // Get selected indexes(from lvDirs) and remove it.
     void removeFDClicked();
 
 public:

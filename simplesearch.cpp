@@ -61,7 +61,7 @@ void SimpleSearch<_CmpCharT>::replace()
     {
         index += offset;
         m_data.remove(index, m_needle.length());
-        m_data.insert(index, m_replacement);
+        m_data.insert(index, m_replacement.toString());
         offset += sizeDifferent;
     }
 }

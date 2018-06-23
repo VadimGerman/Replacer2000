@@ -26,7 +26,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    simplesearch.cpp
+    simplesearch.cpp \
+    engine.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -34,4 +35,5 @@ HEADERS += \
     simpleresultdata.h \
     cs_cmpchar.h \
     ci_cmpchar.h \
-    search.h
+    search.h \
+    engine.h

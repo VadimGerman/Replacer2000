@@ -6,7 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Visual components init.
     lbNeedle = new QLabel("Search:");
     lbReplacement = new QLabel("Replace to:");
-    lbDirs = new QLabel("Directories and files:");         // Files and directories.
+    lbDirs = new QLabel("Directories and files:");
     lbResult = new QLabel("Result:");
     lbStatistic = new QLabel("*Statistic string*");
     pbSearch = new QPushButton("Search");
@@ -18,6 +18,12 @@ MainWindow::MainWindow(QWidget *parent)
     leReplacement = new QLineEdit;
     lvDirs = new QListView;
     lvResult = new QListView;
+    m_dirsAndFilesModel = new QStandardItemModel;
+    m_resultModel = new QStandardItemModel;
+
+    // Init lv.
+    lvDirs->setModel(m_dirsAndFilesModel);
+    lvResult->setModel(m_resultModel);
 
     initLayouts();
 
@@ -86,15 +92,65 @@ void MainWindow::replaceClicked()
 
 void MainWindow::addDirClicked()
 {
-    QMessageBox::information(this, "Information", "add directory clicked");
+    QFileDialog fileDialog(this);
+    fileDialog.setFileMode(QFileDialog::Directory);
+    fileDialog.setOption(QFileDialog::ShowDirsOnly, true);
+    fileDialog.setViewMode(QFileDialog::Detail);
+
+    QStringList files;
+    if (!fileDialog.exec())
+    {
+        return;
+    }
+
+    // Add files in model.
+    for (auto &file : fileDialog.selectedFiles())
+    {
+        QStandardItem *item = new QStandardItem(file);
+
+        // Directory must be unique.
+        if (m_dirsAndFilesModel->indexFromItem(item).isValid())
+        {
+            delete item;
+            continue;
+        }
+        m_dirsAndFilesModel->appendRow(item);
+    }
 }
 
 void MainWindow::addFileClicked()
 {
-    QMessageBox::information(this, "Information", "add file clicked");
+    QFileDialog fileDialog(this);
+    fileDialog.setFileMode(QFileDialog::ExistingFiles);
+    fileDialog.setViewMode(QFileDialog::Detail);
+
+    if (!fileDialog.exec())
+    {
+        return;
+    }
+
+    // Add files in model.
+    for (auto &file : fileDialog.selectedFiles())
+    {
+        QStandardItem *item = new QStandardItem(file);
+
+        // File must be unique.
+        if (m_dirsAndFilesModel->indexFromItem(item).isValid())
+        {
+            delete item;
+            continue;
+        }
+        m_dirsAndFilesModel->appendRow(item);
+    }
 }
 
+// TODO: Remove a few selected items.
 void MainWindow::removeFDClicked()
 {
-    QMessageBox::information(this, "Information", "remove clicked");
+    QModelIndex index = lvDirs->currentIndex();
+
+    if (index.isValid())
+    {
+        m_dirsAndFilesModel->removeRow(lvDirs->currentIndex().row());
+    }
 }
