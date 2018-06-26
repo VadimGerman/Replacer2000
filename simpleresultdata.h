@@ -3,12 +3,19 @@
 
 #include <QString>
 #include <QQueue>
+#include <QMap>
+
+struct SearchData
+{
+    QStringView needle;
+    QStringView replacement;
+};
 
 struct SimpleResultData
 {
-    QString needle;
-    QString replacement;
-    QQueue<int> indexes;
+    QStringView needle;
+    QStringView replacement;
+    QMap<QString, QQueue<int>> *files;
 };
 
 #endif // SIMPLERESULTDATA_H

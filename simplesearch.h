@@ -14,11 +14,11 @@ template <typename _CmpCharT>
 class SimpleSearch
 {
 private:
-    int m_matchesCount;
-    QList<int> *m_fIndexes;
     QStringView m_needle;
     QStringView m_replacement;
-    QString m_data;
+    QString &m_data;
+    QQueue<int> *m_findIndexes;
+
     bool m_ignoreWhiteSpaces;
 
     // Использует m_needle для составления префикс функции.
@@ -30,36 +30,19 @@ private:
 public:
     SimpleSearch() = delete;
 
-    SimpleSearch(QStringView &needle_,
-                 QStringView &replacement_,
-                 const QString &data_,
-                 bool ignoreWS_ = false);
-
-    SimpleSearch(SimpleResultData *inData_,
-                 const QString &data_,
+    SimpleSearch(SearchData *inData_,
+                 QString &data_,
                  bool ignoreWS_ = false);
 
     virtual ~SimpleSearch();
 
-    // Ignore white spaces.
-    void setIgnoreWhiteSpaces(bool ignore_);
-    bool getIgnoreWhiteSpaces() const;
-
     // Использует реализацию метода КМП.
-    void search();
+    QQueue<int> *search();
 
-    void replace();
-
-    // TODO: Следующие два метода заменить на возвращаемое
-    // значение соответствующих методов.
-
-    // После вызова search() можно узнать по каким индексам были
-    // найдены вхождения.
-    QList<int> *getFoundIndexes();
-\
-    // После вызова replace() вы скорее всего захотите получить
-    // измененную строку.
-    QString getChangedData() const;
+    // Если ты вдруг потерял строку которую давал на входе -
+    // не беспокойся, после замены вызовом replacement,
+    // будет возвращена ссылка на неё.
+    QString &replace();
 };
 
 #endif // SIMPLESEARCH_H

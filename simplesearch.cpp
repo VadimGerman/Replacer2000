@@ -1,28 +1,14 @@
 #include "simplesearch.h"
 
 template<typename _CmpCharT>
-SimpleSearch<_CmpCharT>::SimpleSearch(QStringView &needle_,
-                                      QStringView &replacement_,
-                                      const QString &data_,
-                                      bool ignoreWS_) :
-        m_needle(needle_),
-        m_replacement(replacement_),
-        m_data(data_),
-        m_ignoreWhiteSpaces(ignoreWS_),
-        m_fIndexes(new QList<int>)
-{
-
-}
-
-template<typename _CmpCharT>
-SimpleSearch<_CmpCharT>::SimpleSearch(SimpleResultData *inData_,
-                                      const QString &data_,
+SimpleSearch<_CmpCharT>::SimpleSearch(SearchData *inData_,
+                                      QString &data_,
                                       bool ignoreWS_) :
     m_needle(inData_->needle),
     m_replacement(inData_->replacement),
     m_data(data_),
     m_ignoreWhiteSpaces(ignoreWS_),
-    m_fIndexes(new QList<int>)
+    m_findIndexes(nullptr)
 {
 
 }
@@ -34,36 +20,28 @@ SimpleSearch<_CmpCharT>::~SimpleSearch()
 }
 
 template<typename _CmpCharT>
-void SimpleSearch<_CmpCharT>::setIgnoreWhiteSpaces(bool ignore_)
-{
-    m_ignoreWhiteSpaces = ignore_;
-}
-
-template<typename _CmpCharT>
-bool SimpleSearch<_CmpCharT>::getIgnoreWhiteSpaces() const
-{
-    return m_ignoreWhiteSpaces;
-}
-
-template<typename _CmpCharT>
-void SimpleSearch<_CmpCharT>::search()
+QQueue<int> *SimpleSearch<_CmpCharT>::search()
 {
     kmpSearch();
+    return m_findIndexes;
 }
 
 template<typename _CmpCharT>
-void SimpleSearch<_CmpCharT>::replace()
+QString &SimpleSearch<_CmpCharT>::replace()
 {
-    int sizeDifferent = m_replacement.length() - m_needle.length();
+    int sizeDifferent =
+        m_replacement.length() - m_needle.length();
     int offset = 0;     // Смещение при замене needle на replacement.
 
-    for (int index : m_fIndexes)
+    for (int index : m_findIndexes)
     {
         index += offset;
         m_data.remove(index, m_needle.length());
         m_data.insert(index, m_replacement.toString());
         offset += sizeDifferent;
     }
+
+    return m_data;
 }
 
 template<typename _CmpCharT>
@@ -124,7 +102,7 @@ void SimpleSearch<_CmpCharT>::kmpSearch()
             {
                 // matchedP шагов назад было удачное
                 // вхождение подстроки в строку. Добавляем.
-                m_fIndexes->push_back(abs(current - matchedP));
+                m_findIndexes->push_back(abs(current - matchedP));
                 matchedP = 0;
                 continue;                       // Отлично, ищем дальше.
             }
