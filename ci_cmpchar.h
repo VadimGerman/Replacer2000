@@ -7,20 +7,22 @@
  * 'S' == 's'
  **/
 
-#include <cctype>
+#include <QChar>
 
 struct ci_cmpchar
 {
-    static inline bool eq(const char c1, const char c2) noexcept
+    static inline bool eq(const QChar c1, const QChar c2) noexcept
     {
-        return std::toupper(static_cast<unsigned char>(c1)) ==
-                std::toupper(static_cast<unsigned char>(c2));
+        return c1.toUpper() == c2.toUpper();
+//        return std::toupper(static_cast<unsigned char>(c1)) ==
+//                std::toupper(static_cast<unsigned char>(c2));
     }
 
-    static inline bool lt(const char c1, const char c2) noexcept
+    static inline bool lt(const QChar c1, const QChar c2) noexcept
     {
-        return std::toupper(static_cast<unsigned char>(c1)) <
-                std::toupper(static_cast<unsigned char>(c2));
+        return c1.toUpper() < c2.toUpper();
+//        return std::toupper(static_cast<unsigned char>(c1)) <
+//                std::toupper(static_cast<unsigned char>(c2));
     }
 };
 

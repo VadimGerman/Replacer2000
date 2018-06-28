@@ -4,7 +4,7 @@ Engine::Engine()
 {
     m_needle = "";
     m_replacement = "";
-    m_files = nullptr;
+    m_files = new QQueue<QString>;
     m_caseSensetive = true;
     m_ignoreWhiteSpaces = false;
     m_doesntContain = false;
@@ -22,7 +22,7 @@ void Engine::setReplacement(const QString &replacement_)
     m_replacement = replacement_;
 }
 
-void Engine::setFilesList(QList<QString> *files_)
+void Engine::setFilesList(QQueue<QString> *files_)
 {
     m_files = files_;
 }
@@ -32,19 +32,13 @@ void Engine::search()
     // Подготовка списка файлов.
 
     // Настройка поиска в соответствии с параметрами.
-    if (m_useRegExp)
+    if (m_useRegExp)                /// TODO: Need factore?
     {
-        if (m_wholeWordsOnly)
-            m_needle = "\\b(" + m_needle + ")\\b";
-        if (m_doesntContain)
-        {}
-        if (m_ignoreWhiteSpaces)
-        {}
-        // m_rXResult = ...;
+        regExSearch();
     }
     else
     {
-        simpleSeatch();
+        simpleSearch();
     }
 }
 
@@ -53,14 +47,17 @@ void Engine::replace()
 
 }
 
-void Engine::simpleSearch() const
+void Engine::simpleSearch()
 {
-    while (auto &filePath : *m_files)
+    SearchData *searchData = new SearchData { m_needle,
+                                              m_replacement };
+
+    for (auto &path : *m_files)
     {
         try
         {
             QString fileData;
-            QFile *file = new QFile(filePath);
+            QFile *file = new QFile(path);
             if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
             {
                 continue;
@@ -70,12 +67,43 @@ void Engine::simpleSearch() const
             fileData = file->readAll();
             file->close();
 
-            SimpleSearch *search = new SimpleSearch()
-            m_simpleResult =
+            if (m_caseSensetive)
+            {
+               CS_Search *search = new CS_Search(searchData,
+                                                 fileData,
+                                                 m_ignoreWhiteSpaces);
+               search->search();
+               search->replace();
+               qDebug() << search->replace();
+//               m_simpleResult =
+            }
+            else
+            {
+                CI_Search *search = new CI_Search(searchData,
+                                                  fileData,
+                                                  m_ignoreWhiteSpaces);
+                search->search();
+                search->replace();
+                qDebug() << search->replace();
+            }
         }
         catch (...)
         {
-            continue;
+            // Error message.
         }
     }
+
+    delete searchData;
+}
+
+void Engine::regExSearch()
+{
+    QString needle = m_needle;
+    if (m_wholeWordsOnly)
+        needle = "\\b(" + needle + ")\\b";
+    if (m_doesntContain)
+    {}
+    if (m_ignoreWhiteSpaces)
+    {}
+    // m_rXResult = ...;
 }

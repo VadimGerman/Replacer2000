@@ -7,14 +7,16 @@
  * 'S' != 's'
  **/
 
+#include <QChar>
+
 struct cs_cmpchar
 {
-    static inline bool eq(char c1, char c2) noexcept
+    static inline bool eq(QChar c1, QChar c2) noexcept
     {
         return c1 == c2;
     }
 
-    static inline bool lt(char c1, char c2) noexcept
+    static inline bool lt(QChar c1, QChar c2) noexcept
     {
         return c1 < c2;
     }

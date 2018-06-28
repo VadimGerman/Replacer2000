@@ -12,6 +12,8 @@
 #include <QFileDialog>
 #include <QStandardItem>
 
+#include "engine.h"
+
 
 class MainWindow : public QMainWindow
 {
@@ -42,6 +44,7 @@ class MainWindow : public QMainWindow
     QStandardItemModel *m_dirsAndFilesModel;
     QStandardItemModel *m_resultModel;
 
+    Engine *m_engine;
 
     void initLayouts();
 

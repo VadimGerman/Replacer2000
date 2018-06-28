@@ -32,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(pbAddDirectory, SIGNAL(clicked()), this, SLOT(addDirClicked()));
     QObject::connect(pbAddFile, SIGNAL(clicked()), this, SLOT(addFileClicked()));
     QObject::connect(pbRemoveFD, SIGNAL(clicked()), this, SLOT(removeFDClicked()));
+
+    m_engine = new Engine;
 }
 
 MainWindow::~MainWindow()
@@ -82,7 +84,19 @@ void MainWindow::initLayouts()
 
 void MainWindow::searchClicked()
 {
-    QMessageBox::information(this, "Information", "search clicked");
+    m_engine->setNeedle(leNeedle->text());
+    m_engine->setReplacement(leReplacement->text());
+
+    QQueue<QString> *files = new QQueue<QString>;
+    for(int i = 0; i < m_dirsAndFilesModel->rowCount(); ++i)
+    {
+        QModelIndex index = m_dirsAndFilesModel->index(i, 0);
+        QString file = index.data(Qt::DisplayRole).toString();
+        files->push_back(file);
+    }
+
+    m_engine->setFilesList(files);
+    m_engine->search();
 }
 
 void MainWindow::replaceClicked()
@@ -144,7 +158,7 @@ void MainWindow::addFileClicked()
     }
 }
 
-// TODO: Remove a few selected items.
+/// TODO: Remove a few selected items.
 void MainWindow::removeFDClicked()
 {
     QModelIndex index = lvDirs->currentIndex();

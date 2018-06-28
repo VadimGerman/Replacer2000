@@ -10,6 +10,8 @@
  **/
 
 #include <QFile>
+#include <QMessageBox>
+#include <QtDebug>
 
 #include "search.h"
 
@@ -17,11 +19,12 @@ class Engine
 {
     QString m_needle;
     QString m_replacement;
-    QList<QString> *m_files;
+    QQueue<QString> *m_files;
     SimpleResultData *m_simpleResult;
 //    RXResultData *m_rXResult;
 
-    void simpleSearch() const;
+    void simpleSearch();
+    void regExSearch();
 
 public:
     // Настройки поиска.
@@ -37,7 +40,7 @@ public:
     void setNeedle(const QString &needle_);
     void setReplacement(const QString &replacement_);
 
-    void setFilesList(QList<QString> *files_);
+    void setFilesList(QQueue<QString> *files_);
 
     void search();
     void replace();
