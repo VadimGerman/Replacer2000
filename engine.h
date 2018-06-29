@@ -40,7 +40,7 @@ public:
     void setNeedle(const QString &needle_);
     void setReplacement(const QString &replacement_);
 
-    void setFilesList(QQueue<QString> *files_);
+    void addFile(const QString &file);
 
     void search();
     void replace();

@@ -22,9 +22,9 @@ void Engine::setReplacement(const QString &replacement_)
     m_replacement = replacement_;
 }
 
-void Engine::setFilesList(QQueue<QString> *files_)
+void Engine::addFile(const QString &file)
 {
-    m_files = files_;
+    m_files->push_back(file);
 }
 
 void Engine::search()
@@ -85,6 +85,7 @@ void Engine::simpleSearch()
                 search->search();
                 search->replace();
                 qDebug() << search->replace();
+                qDebug() << "----------------------------------------------";
             }
         }
         catch (...)

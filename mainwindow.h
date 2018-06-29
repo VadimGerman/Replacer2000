@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QStandardItem>
+#include <QDir>
 
 #include "engine.h"
 
@@ -47,6 +48,9 @@ class MainWindow : public QMainWindow
     Engine *m_engine;
 
     void initLayouts();
+
+    void findAllFiles(const QDir &dir);
+    bool isChildFolder(const QString &root, const QString &child) const;
 
 public slots:
     void searchClicked();

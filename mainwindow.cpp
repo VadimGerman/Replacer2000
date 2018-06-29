@@ -82,20 +82,48 @@ void MainWindow::initLayouts()
     this->setCentralWidget(window);
 }
 
+void MainWindow::findAllFiles(const QDir &dir)
+{
+    QFileInfoList eList = dir.entryInfoList();
+    for (auto &elem : eList)
+    {
+        bool isChild = isChildFolder(dir.path(), elem.absoluteFilePath());
+        if (elem.isFile() || elem.isSymLink())
+        {
+            m_engine->addFile(elem.absoluteFilePath());
+        }
+        else if (elem.isDir() && isChild)
+        {
+            const QDir subDir(elem.absoluteFilePath());
+            findAllFiles(subDir);
+        }
+    }
+}
+
+bool MainWindow::isChildFolder(const QString &root,
+                               const QString &child) const
+{
+//    if (m_searchInSubdir == false)
+//    {
+//        return false;
+//    }
+
+    return root.length() < child.length();
+}
+
 void MainWindow::searchClicked()
 {
     m_engine->setNeedle(leNeedle->text());
     m_engine->setReplacement(leReplacement->text());
 
-    QQueue<QString> *files = new QQueue<QString>;
-    for(int i = 0; i < m_dirsAndFilesModel->rowCount(); ++i)
+    // Add files in engine.
+    for (int i = 0; i < m_dirsAndFilesModel->rowCount(); ++i)
     {
         QModelIndex index = m_dirsAndFilesModel->index(i, 0);
-        QString file = index.data(Qt::DisplayRole).toString();
-        files->push_back(file);
+        QString path = index.data(Qt::DisplayRole).toString();
+        findAllFiles(path);
     }
 
-    m_engine->setFilesList(files);
     m_engine->search();
 }
 
