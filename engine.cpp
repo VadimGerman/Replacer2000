@@ -10,6 +10,7 @@ Engine::Engine()
     m_doesntContain = false;
     m_wholeWordsOnly = false;
     m_useRegExp = false;
+    m_simpleResult = new QMap<QString, QQueue<int>*>;
 }
 
 void Engine::setNeedle(const QString &needle_)
@@ -29,10 +30,8 @@ void Engine::addFile(const QString &file)
 
 void Engine::search()
 {
-    // Подготовка списка файлов.
-
     // Настройка поиска в соответствии с параметрами.
-    if (m_useRegExp)                /// TODO: Need factore?
+    if (m_useRegExp)
     {
         regExSearch();
     }
@@ -47,6 +46,11 @@ void Engine::replace()
 
 }
 
+QMap<QString, QQueue<int> *> *Engine::getSimpleResult()
+{
+    return m_simpleResult;
+}
+
 void Engine::simpleSearch()
 {
     SearchData *searchData = new SearchData { m_needle,
@@ -56,7 +60,7 @@ void Engine::simpleSearch()
     {
         try
         {
-            QString fileData;
+            QString fileData;               /// TODO: вынести открытие и закрытие файла в отдельные методы.
             QFile *file = new QFile(path);
             if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
             {
@@ -67,25 +71,19 @@ void Engine::simpleSearch()
             fileData = file->readAll();
             file->close();
 
-            if (m_caseSensetive)
+            if (m_caseSensetive)    /// TODO: Вообще как-то по ебанутому, при каждой итерации проверять что ли?
             {
                CS_Search *search = new CS_Search(searchData,
                                                  fileData,
                                                  m_ignoreWhiteSpaces);
-               search->search();
-               search->replace();
-               qDebug() << search->replace();
-//               m_simpleResult =
+               m_simpleResult->insert(path, search->search());
             }
             else
             {
                 CI_Search *search = new CI_Search(searchData,
                                                   fileData,
                                                   m_ignoreWhiteSpaces);
-                search->search();
-                search->replace();
-                qDebug() << search->replace();
-                qDebug() << "----------------------------------------------";
+                m_simpleResult->insert(path, search->search());
             }
         }
         catch (...)

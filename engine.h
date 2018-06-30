@@ -20,7 +20,7 @@ class Engine
     QString m_needle;
     QString m_replacement;
     QQueue<QString> *m_files;
-    SimpleResultData *m_simpleResult;
+    QMap<QString, QQueue<int>*> *m_simpleResult;
 //    RXResultData *m_rXResult;
 
     void simpleSearch();
@@ -46,6 +46,9 @@ public:
     void replace();
     // QAbstractItemModel * getResult();
     // QString getStatistic();
+
+    QMap<QString, QQueue<int> *> *getSimpleResult();
+    // ... *getRXResult();
 };
 
 #endif // ENGINE_H

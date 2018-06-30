@@ -124,7 +124,16 @@ void MainWindow::searchClicked()
         findAllFiles(path);
     }
 
-    m_engine->search();
+    m_engine->search(); // if (...) getSimpleResult; else getRXResult();
+
+    auto result = m_engine->getSimpleResult();
+    for (auto it = result->begin(); it != result->end(); ++it)
+    {
+        char buffer[12] = "";
+        itoa(it.value()->size(), buffer, 10);
+        QStandardItem *item = new QStandardItem(it.key() + "(" + buffer + ")");
+        m_resultModel->appendRow(item);
+    }
 }
 
 void MainWindow::replaceClicked()

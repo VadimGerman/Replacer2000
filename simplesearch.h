@@ -126,7 +126,6 @@ void SimpleSearch<_CmpCharT>::kmpSearch()
 template<typename _CmpCharT>
 SimpleSearch<_CmpCharT>::SimpleSearch()
 {
-
 }
 
 template<typename _CmpCharT>
@@ -137,7 +136,6 @@ SimpleSearch<_CmpCharT>::SimpleSearch(SearchData *inData_, QString &data_, bool 
     m_ignoreWhiteSpaces(ignoreWS_),
     m_findIndexes(nullptr)
 {
-
 }
 
 template<typename _CmpCharT>
