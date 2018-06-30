@@ -98,8 +98,10 @@ void MainWindow::createMenus()
 void MainWindow::findAllFiles(const QDir &dir)
 {
     QFileInfoList eList = dir.entryInfoList();
+
     for (auto &elem : eList)
     {
+        /// TODO: isChildFolder() - Must have standart solution.
         bool isChild = isChildFolder(dir.path(), elem.absoluteFilePath());
         if (elem.isFile() || elem.isSymLink())
         {
@@ -107,7 +109,7 @@ void MainWindow::findAllFiles(const QDir &dir)
         }
         else if (elem.isDir() && isChild)
         {
-            const QDir subDir(elem.absoluteFilePath());
+            QDir subDir(elem.absoluteFilePath());
             findAllFiles(subDir);
         }
     }
@@ -134,7 +136,12 @@ void MainWindow::searchClicked()
     {
         QModelIndex index = m_dirsAndFilesModel->index(i, 0);
         QString path = index.data(Qt::DisplayRole).toString();
-        findAllFiles(path);
+
+        QFileInfo fileChecker(path);
+        if (fileChecker.isFile() || fileChecker.isSymLink())
+            m_engine->addFile(path);
+        else
+            findAllFiles(path);
     }
 
     m_engine->search(); // if (...) getSimpleResult; else getRXResult();
@@ -151,6 +158,7 @@ void MainWindow::searchClicked()
 
 void MainWindow::replaceClicked()
 {
+    m_engine->setReplacement(leReplacement->text());
     m_engine->replace();
 }
 
