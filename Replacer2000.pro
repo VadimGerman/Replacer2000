@@ -26,7 +26,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    engine.cpp
+    engine.cpp \
+    simplereplace.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -35,4 +36,5 @@ HEADERS += \
     cs_cmpchar.h \
     ci_cmpchar.h \
     search.h \
-    engine.h
+    engine.h \
+    simplereplace.h

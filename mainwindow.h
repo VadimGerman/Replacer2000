@@ -11,6 +11,8 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QStandardItem>
+#include <QAction>
+#include <QMenu>
 #include <QDir>
 
 #include "engine.h"
@@ -41,6 +43,11 @@ class MainWindow : public QMainWindow
     // Search or replace result list.
     QListView *lvResult;
 
+    // Actions.
+    QMenu *mFile;
+    QAction *aCleanAll;
+    QAction *aLoadFromBackup;
+
     // Data models.
     QStandardItemModel *m_dirsAndFilesModel;
     QStandardItemModel *m_resultModel;
@@ -48,6 +55,8 @@ class MainWindow : public QMainWindow
     Engine *m_engine;
 
     void initLayouts();
+    void createActions();
+    void createMenus();
 
     void findAllFiles(const QDir &dir);
     bool isChildFolder(const QString &root, const QString &child) const;
@@ -63,6 +72,8 @@ public slots:
 
     // Get selected indexes(from lvDirs) and remove it.
     void removeFDClicked();
+
+    void cleanAll();
 
 public:
     MainWindow(QWidget *parent = 0);

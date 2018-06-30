@@ -10,7 +10,7 @@ Engine::Engine()
     m_doesntContain = false;
     m_wholeWordsOnly = false;
     m_useRegExp = false;
-    m_simpleResult = new QMap<QString, QQueue<int>*>;
+    m_simpleResult = new QMap<QString, QQueue<int> *>;
 }
 
 void Engine::setNeedle(const QString &needle_)
@@ -43,7 +43,32 @@ void Engine::search()
 
 void Engine::replace()
 {
+    ReplaceData rData;
+    rData.needle = m_needle;
+    rData.replacement = m_replacement;
+    QFile *file = new QFile();
 
+    // Replace for all files in result variable.
+    for (auto it = m_simpleResult->begin();
+         it != m_simpleResult->end();
+         ++it)
+    {
+        rData.indexes = *it;
+        // Read data from file and close it.
+        file->setFileName(it.key());                                /// TODO: Need try/catch
+        if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
+            continue;
+        QString data = file->readAll();
+        file->close();
+
+        // Make the replace and rewrite file.
+        SimpleReplace::replace(rData, data);
+        if (!file->open(QIODevice::ReadWrite | QIODevice::Truncate))
+            continue;
+        file->seek(0);
+        file->write(data.toStdString().c_str(), data.length());
+        file->close();
+    }
 }
 
 QMap<QString, QQueue<int> *> *Engine::getSimpleResult()
@@ -63,9 +88,7 @@ void Engine::simpleSearch()
             QString fileData;               /// TODO: вынести открытие и закрытие файла в отдельные методы.
             QFile *file = new QFile(path);
             if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
-            {
                 continue;
-            }
 
             // Чтение файла.
             fileData = file->readAll();

@@ -26,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent)
     lvResult->setModel(m_resultModel);
 
     initLayouts();
+    createActions();
+    createMenus();
 
     QObject::connect(pbSearch, SIGNAL(clicked()), this, SLOT(searchClicked()));
     QObject::connect(pbReplace, SIGNAL(clicked()), this, SLOT(replaceClicked()));
@@ -80,6 +82,17 @@ void MainWindow::initLayouts()
 
     window->setLayout(main);
     this->setCentralWidget(window);
+}
+
+void MainWindow::createActions()
+{
+    aCleanAll = new QAction(tr("Clean all"), this);
+    aCleanAll->setStatusTip(tr("All will be like was when you started."));
+    connect(aCleanAll, &QAction::triggered, this, &MainWindow::cleanAll);
+}
+
+void MainWindow::createMenus()
+{
 }
 
 void MainWindow::findAllFiles(const QDir &dir)
@@ -138,7 +151,7 @@ void MainWindow::searchClicked()
 
 void MainWindow::replaceClicked()
 {
-    QMessageBox::information(this, "Information", "replace clicked");
+    m_engine->replace();
 }
 
 void MainWindow::addDirClicked()
@@ -204,4 +217,9 @@ void MainWindow::removeFDClicked()
     {
         m_dirsAndFilesModel->removeRow(lvDirs->currentIndex().row());
     }
+}
+
+void MainWindow::cleanAll()
+{
+
 }
