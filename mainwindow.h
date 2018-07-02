@@ -12,7 +12,7 @@
 #include <QFileDialog>
 #include <QStandardItem>
 #include <QAction>
-#include <QMenu>
+#include <QMenuBar>
 #include <QDir>
 
 #include "engine.h"
@@ -44,9 +44,18 @@ class MainWindow : public QMainWindow
     QListView *lvResult;
 
     // Actions.
-    QMenu *mFile;
+    QAction *aSetBackupDir;         // Backup.
+    QAction *aRevertFromBackup;
+
+    QAction *aCaseSensetive;        // Settings.
+    QAction *aIgnoreWhiteSpaces;
+    QAction *aDoesntContaint;
+    QAction *aWholeWordsOnly;
+    QAction *aSettings;
     QAction *aCleanAll;
-    QAction *aLoadFromBackup;
+
+    QAction *aHelp;                 // About.
+    QAction *aAbout;
 
     // Data models.
     QStandardItemModel *m_dirsAndFilesModel;
@@ -62,6 +71,19 @@ class MainWindow : public QMainWindow
     bool isChildFolder(const QString &root, const QString &child) const;
 
 public slots:
+
+    // Actions.
+    void setBackupDir();
+    void revertFromBackup();
+    void changeCS();
+    void changeIgnoreWS();
+    void changeDoesntContain();
+    void changeWWO();
+    void showSettings();
+    void cleanAll();
+    void showHelp();
+    void showAllSettings();
+
     void searchClicked();
     void replaceClicked();
 
@@ -73,7 +95,6 @@ public slots:
     // Get selected indexes(from lvDirs) and remove it.
     void removeFDClicked();
 
-    void cleanAll();
 
 public:
     MainWindow(QWidget *parent = 0);

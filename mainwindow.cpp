@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(pbRemoveFD, SIGNAL(clicked()), this, SLOT(removeFDClicked()));
 
     m_engine = new Engine;
+
 }
 
 MainWindow::~MainWindow()
@@ -86,13 +87,73 @@ void MainWindow::initLayouts()
 
 void MainWindow::createActions()
 {
+    aSetBackupDir = new QAction(tr("Set backup directory..."), this);
+    connect(aSetBackupDir, &QAction::changed, this,
+            &MainWindow::setBackupDir);
+
+    aRevertFromBackup = new QAction(tr("Revert from backup..."), this);
+    connect(aRevertFromBackup, &QAction::changed, this,
+            &MainWindow::revertFromBackup);
+
+    aCaseSensetive = new QAction(tr("Case sensetive"), this);
+    aCaseSensetive->setCheckable(true);
+    connect(aCaseSensetive, &QAction::changed, this,
+            &MainWindow::changeCS);
+
+    aIgnoreWhiteSpaces = new QAction(tr("Ignore white spaces"), this);
+    aIgnoreWhiteSpaces->setCheckable(true);
+    connect(aIgnoreWhiteSpaces, &QAction::changed, this,
+            &MainWindow::changeIgnoreWS);
+
+    aDoesntContaint = new QAction(tr("Doesn't contain"), this);
+    aDoesntContaint->setCheckable(true);
+    connect(aDoesntContaint, &QAction::changed, this,
+            &MainWindow::changeDoesntContain);
+
+    aWholeWordsOnly = new QAction(tr("Whole words only"), this);
+    aWholeWordsOnly->setCheckable(true);
+    connect(aWholeWordsOnly, &QAction::changed, this,
+            &MainWindow::changeWWO);
+
+    aSettings = new QAction(tr("Settings"), this);
+    connect(aSettings, &QAction::changed, this,
+            &MainWindow::showSettings);
+
     aCleanAll = new QAction(tr("Clean all"), this);
-    aCleanAll->setStatusTip(tr("All will be like was when you started."));
-    connect(aCleanAll, &QAction::triggered, this, &MainWindow::cleanAll);
+    aCleanAll->setStatusTip(tr("All will be like was when you started."));          /// TODO: Remove later.
+    connect(aCleanAll, &QAction::triggered, this,
+            &MainWindow::cleanAll);
+
+    aHelp = new QAction(tr("Help"), this);
+    connect(aHelp, &QAction::changed, this,
+            &MainWindow::showHelp);
+
+    aAbout = new QAction(tr("About"), this);
+    connect(aAbout, &QAction::changed, this,
+            &MainWindow::showAllSettings);
 }
 
 void MainWindow::createMenus()
 {
+    QMenu *backup = menuBar()->addMenu("Backup");
+    QMenu *settings = menuBar()->addMenu("Settings");
+    QMenu *about = menuBar()->addMenu("About");
+
+    backup->addAction(aSetBackupDir);
+    backup->addAction(aRevertFromBackup);
+
+    settings->addAction(aCaseSensetive);
+    settings->addAction(aIgnoreWhiteSpaces);
+    settings->addAction(aDoesntContaint);
+    settings->addAction(aWholeWordsOnly);
+    settings->addSeparator();
+    settings->addAction(aSettings);
+    settings->addSeparator();
+    settings->addAction(aCleanAll);
+
+    about->addAction(aHelp);
+    about->addSeparator();
+    about->addAction(aAbout);
 }
 
 void MainWindow::findAllFiles(const QDir &dir)
@@ -124,6 +185,41 @@ bool MainWindow::isChildFolder(const QString &root,
 //    }
 
     return root.length() < child.length();
+}
+
+void MainWindow::setBackupDir()
+{
+
+}
+
+void MainWindow::revertFromBackup()
+{
+
+}
+
+void MainWindow::changeCS()
+{
+
+}
+
+void MainWindow::changeIgnoreWS()
+{
+
+}
+
+void MainWindow::changeDoesntContain()
+{
+
+}
+
+void MainWindow::changeWWO()
+{
+
+}
+
+void MainWindow::showSettings()
+{
+
 }
 
 void MainWindow::searchClicked()
@@ -228,6 +324,16 @@ void MainWindow::removeFDClicked()
 }
 
 void MainWindow::cleanAll()
+{
+
+}
+
+void MainWindow::showHelp()
+{
+
+}
+
+void MainWindow::showAllSettings()
 {
 
 }
