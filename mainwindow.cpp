@@ -37,6 +37,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_engine = new Engine;
     m_baseSettings = new BaseSettings;
+    m_baseSettings->commentType = "//";
+    m_baseSettings->fileMask = "";
+    m_baseSettings->maskType = FileFilterMaskType::IgnoreLikeThis;
+    m_baseSettings->searchInArchives = false;
+    m_baseSettings->searchInSubDirectories = true;
+    m_baseSettings->useRegExpForFiles = false;
 
     cleanAll();
 }
@@ -99,7 +105,7 @@ void MainWindow::createActions()
 
     aCaseSensetive = new QAction(tr("Case sensetive"), this);
     aCaseSensetive->setCheckable(true);
-//    aCaseSensetive->setChecked(true);                                         /// TODO: Uncomment.
+    aCaseSensetive->setChecked(true);
     connect(aCaseSensetive, &QAction::changed, this,
             &MainWindow::changeCS);
 
@@ -183,7 +189,8 @@ void MainWindow::findAllFiles(const QDir &dir)
         {
             m_engine->addFile(elem.absoluteFilePath());
         }
-        else if (elem.isDir() && isChild)
+        else if (elem.isDir() && isChild &&
+                 m_baseSettings->searchInSubDirectories)
         {
             QDir subDir(elem.absoluteFilePath());
             findAllFiles(subDir);
