@@ -33,6 +33,7 @@ public:
     bool m_doesntContain;
     bool m_wholeWordsOnly;
     bool m_useRegExp;
+    bool m_ignoreCommented;
 
     Engine();
     ~Engine();

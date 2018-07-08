@@ -36,12 +36,14 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(pbRemoveFD, SIGNAL(clicked()), this, SLOT(removeFDClicked()));
 
     m_engine = new Engine;
+    m_baseSettings = new BaseSettings;
 
+    cleanAll();
 }
 
 MainWindow::~MainWindow()
 {
-
+    delete m_engine;
 }
 
 void MainWindow::initLayouts()
@@ -88,15 +90,16 @@ void MainWindow::initLayouts()
 void MainWindow::createActions()
 {
     aSetBackupDir = new QAction(tr("Set backup directory..."), this);
-    connect(aSetBackupDir, &QAction::changed, this,
+    connect(aSetBackupDir, &QAction::triggered, this,
             &MainWindow::setBackupDir);
 
     aRevertFromBackup = new QAction(tr("Revert from backup..."), this);
-    connect(aRevertFromBackup, &QAction::changed, this,
+    connect(aRevertFromBackup, &QAction::triggered, this,
             &MainWindow::revertFromBackup);
 
     aCaseSensetive = new QAction(tr("Case sensetive"), this);
     aCaseSensetive->setCheckable(true);
+//    aCaseSensetive->setChecked(true);                                         /// TODO: Uncomment.
     connect(aCaseSensetive, &QAction::changed, this,
             &MainWindow::changeCS);
 
@@ -105,19 +108,29 @@ void MainWindow::createActions()
     connect(aIgnoreWhiteSpaces, &QAction::changed, this,
             &MainWindow::changeIgnoreWS);
 
-    aDoesntContaint = new QAction(tr("Doesn't contain"), this);
-    aDoesntContaint->setCheckable(true);
-    connect(aDoesntContaint, &QAction::changed, this,
+    aDoesntContain = new QAction(tr("Doesn't contain"), this);
+    aDoesntContain->setCheckable(true);
+    connect(aDoesntContain, &QAction::changed, this,
             &MainWindow::changeDoesntContain);
+
+    aUseRegExp = new QAction(tr("Use regular expressions"), this);
+    aUseRegExp->setCheckable(true);
+    connect(aUseRegExp, &QAction::changed, this,
+            &MainWindow::changeUseRegExp);
 
     aWholeWordsOnly = new QAction(tr("Whole words only"), this);
     aWholeWordsOnly->setCheckable(true);
     connect(aWholeWordsOnly, &QAction::changed, this,
             &MainWindow::changeWWO);
 
+    aIgnoreCommented = new QAction(tr("Ignore commented"), this);
+    aIgnoreCommented->setCheckable(true);
+    connect(aIgnoreCommented, &QAction::changed, this,
+            &MainWindow::changeIgnoreCommented);
+
     aSettings = new QAction(tr("Settings"), this);
-    connect(aSettings, &QAction::changed, this,
-            &MainWindow::showSettings);
+    connect(aSettings, &QAction::triggered, this,
+            &MainWindow::showAllSettings);
 
     aCleanAll = new QAction(tr("Clean all"), this);
     aCleanAll->setStatusTip(tr("All will be like was when you started."));          /// TODO: Remove later.
@@ -125,12 +138,12 @@ void MainWindow::createActions()
             &MainWindow::cleanAll);
 
     aHelp = new QAction(tr("Help"), this);
-    connect(aHelp, &QAction::changed, this,
+    connect(aHelp, &QAction::triggered, this,
             &MainWindow::showHelp);
 
     aAbout = new QAction(tr("About"), this);
-    connect(aAbout, &QAction::changed, this,
-            &MainWindow::showAllSettings);
+    connect(aAbout, &QAction::triggered, this,
+            &MainWindow::showAbout);
 }
 
 void MainWindow::createMenus()
@@ -144,8 +157,10 @@ void MainWindow::createMenus()
 
     settings->addAction(aCaseSensetive);
     settings->addAction(aIgnoreWhiteSpaces);
-    settings->addAction(aDoesntContaint);
+    settings->addAction(aDoesntContain);
+    settings->addAction(aUseRegExp);
     settings->addAction(aWholeWordsOnly);
+    settings->addAction(aIgnoreCommented);
     settings->addSeparator();
     settings->addAction(aSettings);
     settings->addSeparator();
@@ -187,6 +202,45 @@ bool MainWindow::isChildFolder(const QString &root,
     return root.length() < child.length();
 }
 
+AllSettings *MainWindow::getSettings() const
+{
+    AllSettings *settings = new AllSettings;
+    settings->caseSensetive = aCaseSensetive->isChecked();
+    settings->ignoreWhiteSpaces = aIgnoreWhiteSpaces->isChecked();
+    settings->doesntContain = aDoesntContain->isChecked();
+    settings->wholeWordsOnly = aWholeWordsOnly->isChecked();
+    settings->useRegExp = aUseRegExp->isChecked();
+    settings->ignoreCommented = aIgnoreWhiteSpaces->isChecked();
+
+    settings->commentType = m_baseSettings->commentType;
+
+    // Directories an files.
+    settings->searchInSubDirectories = m_baseSettings->searchInSubDirectories;
+    settings->useRegExpForFiles = m_baseSettings->useRegExpForFiles;
+    settings->searchInArchives = m_baseSettings->searchInArchives;
+    settings->maskType = m_baseSettings->maskType;
+
+    return settings;
+}
+
+void MainWindow::setSettings(const AllSettings *settings_)
+{
+    // Forma.
+    aCaseSensetive->setChecked(settings_->caseSensetive);
+    aIgnoreWhiteSpaces->setChecked(settings_->ignoreWhiteSpaces);
+    aDoesntContain->setChecked(settings_->doesntContain);
+    aWholeWordsOnly->setChecked(settings_->wholeWordsOnly);
+    aUseRegExp->setChecked(settings_->useRegExp);
+    aIgnoreCommented->setChecked(settings_->ignoreCommented);
+
+    // Data.
+    m_baseSettings->commentType = settings_->commentType;
+    m_baseSettings->searchInSubDirectories = settings_->searchInSubDirectories;
+    m_baseSettings->useRegExpForFiles = settings_->useRegExpForFiles;
+    m_baseSettings->searchInArchives = settings_->searchInArchives;
+    m_baseSettings->maskType = settings_->maskType;
+}
+
 void MainWindow::setBackupDir()
 {
 
@@ -199,27 +253,27 @@ void MainWindow::revertFromBackup()
 
 void MainWindow::changeCS()
 {
-
+    m_engine->m_caseSensetive = aCaseSensetive->isChecked();
 }
 
 void MainWindow::changeIgnoreWS()
 {
-
+    m_engine->m_ignoreWhiteSpaces = aIgnoreWhiteSpaces->isChecked();
 }
 
 void MainWindow::changeDoesntContain()
 {
-
+    m_engine->m_doesntContain = aDoesntContain->isChecked();
 }
 
 void MainWindow::changeWWO()
 {
-
+    m_engine->m_wholeWordsOnly = aWholeWordsOnly->isChecked();
 }
 
-void MainWindow::showSettings()
+void MainWindow::changeIgnoreCommented()
 {
-
+    m_engine->m_ignoreCommented= aIgnoreCommented->isChecked();
 }
 
 void MainWindow::searchClicked()
@@ -333,7 +387,29 @@ void MainWindow::showHelp()
 
 }
 
-void MainWindow::showAllSettings()
+void MainWindow::showAbout()
 {
 
+}
+
+void MainWindow::showAllSettings()
+{
+    Settings settings(this);
+    settings.setModal(true);
+    AllSettings *settingsData = this->getSettings();
+    settings.setSettings(settingsData);
+
+    if (settings.exec() == QDialog::Accepted)
+    {
+        AllSettings *allData = settings.getSettings();
+        this->setSettings(allData);
+        delete allData;
+    }
+
+    delete settingsData;
+}
+
+void MainWindow::changeUseRegExp()
+{
+    m_engine->m_useRegExp = aUseRegExp->isChecked();
 }

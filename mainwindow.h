@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -15,7 +16,10 @@
 #include <QMenuBar>
 #include <QDir>
 
+#include <QtDebug>
+
 #include "engine.h"
+#include "settings.h"
 
 
 class MainWindow : public QMainWindow
@@ -49,8 +53,10 @@ class MainWindow : public QMainWindow
 
     QAction *aCaseSensetive;        // Settings.
     QAction *aIgnoreWhiteSpaces;
-    QAction *aDoesntContaint;
+    QAction *aDoesntContain;
     QAction *aWholeWordsOnly;
+    QAction *aUseRegExp;
+    QAction *aIgnoreCommented;
     QAction *aSettings;
     QAction *aCleanAll;
 
@@ -62,13 +68,19 @@ class MainWindow : public QMainWindow
     QStandardItemModel *m_resultModel;
 
     Engine *m_engine;
+    BaseSettings *m_baseSettings;
 
     void initLayouts();
     void createActions();
     void createMenus();
 
+    /// TODO: Вынести в отдельный класс и заменить isChildFolder
+    /// чем-нибудь стандартным.
     void findAllFiles(const QDir &dir);
     bool isChildFolder(const QString &root, const QString &child) const;
+
+    AllSettings * getSettings() const;
+    void setSettings(const AllSettings *settings_);
 
 public slots:
 
@@ -79,10 +91,12 @@ public slots:
     void changeIgnoreWS();
     void changeDoesntContain();
     void changeWWO();
-    void showSettings();
+    void changeIgnoreCommented();
     void cleanAll();
     void showHelp();
+    void showAbout();
     void showAllSettings();
+    void changeUseRegExp();
 
     void searchClicked();
     void replaceClicked();

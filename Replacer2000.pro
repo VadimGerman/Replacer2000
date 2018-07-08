@@ -27,7 +27,8 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     engine.cpp \
-    simplereplace.cpp
+    simplereplace.cpp \
+    settings.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -37,4 +38,6 @@ HEADERS += \
     ci_cmpchar.h \
     search.h \
     engine.h \
-    simplereplace.h
+    simplereplace.h \
+    settingsdata.h \
+    settings.h

@@ -13,6 +13,11 @@ Engine::Engine()
     m_simpleResult = new QMap<QString, QQueue<int> *>;
 }
 
+Engine::~Engine()
+{
+
+}
+
 void Engine::setNeedle(const QString &needle_)
 {
     m_needle = needle_;
