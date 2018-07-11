@@ -1,11 +1,15 @@
 #include "regexpsearch.h"
 
-RegExpSearch::RegExpSearch(SearchData *inData_, QString &data) :
+RegExpSearch::RegExpSearch(SearchData *inData_,
+                           QString &data,
+                           bool caseSensetive) :
     m_needle(inData_->needle.toString()),
     m_replacement(inData_->replacement),
     m_data(data)
 {
     m_foundIndexes= new QQueue<QPair<int, QString> >;
+    m_needle.setCaseSensitivity(caseSensetive ? Qt::CaseSensitive :
+                                                Qt::CaseInsensitive);
 }
 
 RegExpSearch::~RegExpSearch()

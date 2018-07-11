@@ -1,6 +1,6 @@
 #include "simplereplace.h"
 
-void SimpleReplace::replace(ReplaceData &vars, QString &dataStr)
+void SimpleReplace::replace(SimpleReplaceData &vars, QString &dataStr)
 {
     int sizeDifferent =
             vars.replacement.length() -

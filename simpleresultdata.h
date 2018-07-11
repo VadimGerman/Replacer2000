@@ -11,9 +11,14 @@ struct SearchData
     QStringView replacement;
 };
 
-struct ReplaceData : public SearchData
+struct SimpleReplaceData : public SearchData
 {
     QQueue<int> *indexes;
+};
+
+struct RegExpReplaceData : public SearchData
+{
+    QQueue<QPair<int, QString> > *indexes;
 };
 
 struct SimpleResultData : public SearchData

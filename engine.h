@@ -27,6 +27,9 @@ class Engine
     void simpleSearch();
     void regExSearch();
 
+    void simpleReplace();
+    void regExpReplace();
+
 public:
     // Настройки поиска.
     bool m_caseSensetive;

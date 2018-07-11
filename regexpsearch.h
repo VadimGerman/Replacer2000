@@ -17,7 +17,7 @@ public:
     RegExpSearch() = delete;
 
     RegExpSearch(SearchData *inData_,
-                 QString &data);
+                 QString &data, bool caseSensetive);
 
     ~RegExpSearch();
 

@@ -38,11 +38,6 @@ public:
 
     // Использует реализацию метода КМП.
     QQueue<int> *search();
-
-    // Если ты вдруг потерял строку которую давал на входе -
-    // не беспокойся, после замены вызовом replacement,
-    // будет возвращена ссылка на неё.
-    QString &replace();
 };
 
 //-----------------------------------------------------------------------------
@@ -149,24 +144,6 @@ QQueue<int> *SimpleSearch<_CmpCharT>::search()
 {
     kmpSearch();
     return m_findIndexes;
-}
-
-template<typename _CmpCharT>
-QString &SimpleSearch<_CmpCharT>::replace()
-{
-    int sizeDifferent =
-            m_replacement.length() - m_needle.length();
-    int offset = 0;     // Смещение при замене needle на replacement.
-
-    for (auto index : *m_findIndexes)         /// TODO: Может лучше int &index?
-    {
-        index += offset;
-        m_data.remove(index, m_needle.length());
-        m_data.insert(index, m_replacement.toString());
-        offset += sizeDifferent;
-    }
-
-    return m_data;
 }
 
 #endif // SIMPLESEARCH_H

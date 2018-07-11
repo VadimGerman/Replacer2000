@@ -2,8 +2,9 @@
 #define SEARCH_H
 
 #include "simplesearch.h"
-#include "regexpsearch.h"
 #include "simplereplace.h"
+#include "regexpsearch.h"
+#include "regexpreplace.h"
 #include "ci_cmpchar.h"
 #include "cs_cmpchar.h"
 

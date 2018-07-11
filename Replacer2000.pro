@@ -29,7 +29,8 @@ SOURCES += \
     engine.cpp \
     simplereplace.cpp \
     settings.cpp \
-    regexpsearch.cpp
+    regexpsearch.cpp \
+    regexpreplace.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -42,4 +43,5 @@ HEADERS += \
     simplereplace.h \
     settingsdata.h \
     settings.h \
-    regexpsearch.h
+    regexpsearch.h \
+    regexpreplace.h

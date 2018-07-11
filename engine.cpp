@@ -49,31 +49,13 @@ void Engine::search()
 
 void Engine::replace()
 {
-    ReplaceData rData;
-    rData.needle = m_needle;
-    rData.replacement = m_replacement;
-    QFile *file = new QFile();
-
-    // Replace for all files in result variable.
-    for (auto it = m_simpleResult->begin();
-         it != m_simpleResult->end();
-         ++it)
+    if (m_useRegExp)
     {
-        rData.indexes = *it;
-        // Read data from file and close it.
-        file->setFileName(it.key());                                /// TODO: Need try/catch
-        if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
-            continue;
-        QString data = file->readAll();
-        file->close();
-
-        // Make the replace and rewrite file.
-        SimpleReplace::replace(rData, data);
-        if (!file->open(QIODevice::ReadWrite | QIODevice::Truncate))
-            continue;
-        file->seek(0);
-        file->write(data.toStdString().c_str(), data.length());
-        file->close();
+        regExpReplace();
+    }
+    else
+    {
+        simpleReplace();
     }
 }
 
@@ -158,7 +140,8 @@ void Engine::regExSearch()
             file->close();
 
             RegExpSearch *search = new RegExpSearch(searchData,
-                                             fileData);
+                                                    fileData,
+                                                    m_caseSensetive);
             m_rxResult->insert(path, search->search());
         }
         catch (...)
@@ -168,4 +151,64 @@ void Engine::regExSearch()
     }
 
     delete searchData;
+}
+
+void Engine::simpleReplace()
+{
+    SimpleReplaceData rData;
+    rData.needle = m_needle;
+    rData.replacement = m_replacement;
+    QFile *file = new QFile();
+
+    // Replace for all files in result variable.
+    for (auto it = m_simpleResult->begin();
+         it != m_simpleResult->end();
+         ++it)
+    {
+        rData.indexes = *it;
+        // Read data from file and close it.
+        file->setFileName(it.key());                                /// TODO: Need try/catch
+        if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
+            continue;
+        QString data = file->readAll();
+        file->close();
+
+        // Make the replace and rewrite file.
+        SimpleReplace::replace(rData, data);
+        if (!file->open(QIODevice::ReadWrite | QIODevice::Truncate))
+            continue;
+        file->seek(0);
+        file->write(data.toStdString().c_str(), data.length());
+        file->close();
+    }
+}
+
+void Engine::regExpReplace()
+{
+    RegExpReplaceData rData;
+    rData.needle = m_needle;
+    rData.replacement = m_replacement;
+    QFile *file = new QFile();
+
+    // Replace for all files in result variable.
+    for (auto it = m_rxResult->begin();
+         it != m_rxResult->end();
+         ++it)
+    {
+        rData.indexes = *it;
+        // Read data from file and close it.
+        file->setFileName(it.key());                                /// TODO: Need try/catch
+        if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
+            continue;
+        QString data = file->readAll();
+        file->close();
+
+        // Make the replace and rewrite file.
+        RegExpReplace::replace(rData, data);
+        if (!file->open(QIODevice::ReadWrite | QIODevice::Truncate))
+            continue;
+        file->seek(0);
+        file->write(data.toStdString().c_str(), data.length());
+        file->close();
+    }
 }

@@ -7,7 +7,7 @@ class SimpleReplace
 {
 public:
     SimpleReplace() = delete;
-    static void replace(ReplaceData &vars, QString &dataStr);
+    static void replace(SimpleReplaceData &vars, QString &dataStr);
 };
 
 #endif // SIMPLEREPLACE_H
