@@ -304,7 +304,19 @@ void MainWindow::searchClicked()
     m_engine->search(); // if (...) getSimpleResult; else getRXResult();
 
     auto result = m_engine->getSimpleResult();
+    auto rxResult = m_engine->getRXResult();
+
+    // Simple.
     for (auto it = result->begin(); it != result->end(); ++it)
+    {
+        char buffer[12] = "";
+        itoa(it.value()->size(), buffer, 10);
+        QStandardItem *item = new QStandardItem(it.key() + "(" + buffer + ")");
+        m_resultModel->appendRow(item);
+    }
+
+    // Regular expressions.
+    for (auto it = rxResult->begin(); it != rxResult->end(); ++it)
     {
         char buffer[12] = "";
         itoa(it.value()->size(), buffer, 10);

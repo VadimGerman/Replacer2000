@@ -11,6 +11,7 @@ Engine::Engine()
     m_wholeWordsOnly = false;
     m_useRegExp = false;
     m_simpleResult = new QMap<QString, QQueue<int> *>;
+    m_rxResult = new QMap<QString, QQueue<QPair<int, QString> >*>;
 }
 
 Engine::~Engine()
@@ -81,6 +82,11 @@ QMap<QString, QQueue<int> *> *Engine::getSimpleResult()
     return m_simpleResult;
 }
 
+QMap<QString, QQueue<QPair<int, QString> > *> *Engine::getRXResult()
+{
+    return m_rxResult;
+}
+
 void Engine::simpleSearch()
 {
     SearchData *searchData = new SearchData { m_needle,
@@ -133,4 +139,33 @@ void Engine::regExSearch()
     if (m_ignoreWhiteSpaces)
     {}
     // m_rXResult = ...;
+
+
+    SearchData *searchData = new SearchData { m_needle,
+                                              m_replacement };
+
+    for (auto &path : *m_files)
+    {
+        try
+        {
+            QString fileData;               /// TODO: вынести открытие и закрытие файла в отдельные методы.
+            QFile *file = new QFile(path);
+            if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
+                continue;
+
+            // Чтение файла.
+            fileData = file->readAll();
+            file->close();
+
+            RegExpSearch *search = new RegExpSearch(searchData,
+                                             fileData);
+            m_rxResult->insert(path, search->search());
+        }
+        catch (...)
+        {
+            // Error message.
+        }
+    }
+
+    delete searchData;
 }

@@ -21,6 +21,7 @@ class Engine
     QString m_replacement;
     QQueue<QString> *m_files;
     QMap<QString, QQueue<int>*> *m_simpleResult;
+    QMap<QString, QQueue<QPair<int, QString> >*> *m_rxResult;
 //    RXResultData *m_rXResult;
 
     void simpleSearch();
@@ -49,7 +50,7 @@ public:
     // QString getStatistic();
 
     QMap<QString, QQueue<int> *> *getSimpleResult();
-    // ... *getRXResult();
+    QMap<QString, QQueue<QPair<int, QString> > *> *getRXResult();
 };
 
 #endif // ENGINE_H
