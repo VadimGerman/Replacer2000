@@ -76,7 +76,7 @@ class MainWindow : public QMainWindow
 
     /// TODO: Вынести в отдельный класс и заменить isChildFolder
     /// чем-нибудь стандартным.
-    void findAllFiles(const QDir &dir);
+    void findAllFiles(QDir dir);
     bool isChildFolder(const QString &root, const QString &child) const;
 
     AllSettings * getSettings() const;

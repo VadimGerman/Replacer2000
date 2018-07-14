@@ -38,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_engine = new Engine;
     m_baseSettings = new BaseSettings;
     m_baseSettings->commentType = "//";
-    m_baseSettings->fileMask = "";
+    m_baseSettings->fileMask = "*.*";
     m_baseSettings->maskType = FileFilterMaskType::IgnoreLikeThis;
     m_baseSettings->searchInArchives = false;
     m_baseSettings->searchInSubDirectories = true;
@@ -177,22 +177,30 @@ void MainWindow::createMenus()
     about->addAction(aAbout);
 }
 
-void MainWindow::findAllFiles(const QDir &dir)
+void MainWindow::findAllFiles(QDir dir)
 {
+    // Preparing file filters list.
+    QStringList filters = m_baseSettings->fileMask.split(',');
+    for (auto &filter : filters)
+        filter = filter.trimmed();
+
+    dir.setNameFilters(filters);
+    dir.setFilter(QDir::Filter::NoDotAndDotDot |
+                  QDir::Filter::AllDirs |
+                  QDir::Filter::Files);
     QFileInfoList eList = dir.entryInfoList();
 
     for (auto &elem : eList)
     {
-        /// TODO: isChildFolder() - Must have standart solution.
-        bool isChild = isChildFolder(dir.path(), elem.absoluteFilePath());
+        QString absoluteFilePath = elem.absoluteFilePath();
         if (elem.isFile() || elem.isSymLink())
         {
-            m_engine->addFile(elem.absoluteFilePath());
+            m_engine->addFile(absoluteFilePath);
         }
-        else if (elem.isDir() && isChild &&
+        else if (elem.isDir() &&
                  m_baseSettings->searchInSubDirectories)
         {
-            QDir subDir(elem.absoluteFilePath());
+            QDir subDir(absoluteFilePath);
             findAllFiles(subDir);
         }
     }
@@ -226,6 +234,7 @@ AllSettings *MainWindow::getSettings() const
     settings->useRegExpForFiles = m_baseSettings->useRegExpForFiles;
     settings->searchInArchives = m_baseSettings->searchInArchives;
     settings->maskType = m_baseSettings->maskType;
+    settings->fileMask = m_baseSettings->fileMask;
 
     return settings;
 }
@@ -246,6 +255,7 @@ void MainWindow::setSettings(const AllSettings *settings_)
     m_baseSettings->useRegExpForFiles = settings_->useRegExpForFiles;
     m_baseSettings->searchInArchives = settings_->searchInArchives;
     m_baseSettings->maskType = settings_->maskType;
+    m_baseSettings->fileMask = settings_->fileMask;
 }
 
 void MainWindow::setBackupDir()

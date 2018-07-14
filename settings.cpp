@@ -105,9 +105,17 @@ void Settings::setSettings(const AllSettings*settings_)
     cbInSubDirectories->setChecked(settings_->searchInSubDirectories);
     cbInArchives->setChecked(settings_->searchInArchives);
     cbUseRegExpForFiles->setChecked(settings_->useRegExpForFiles);
-    rbIgnore->setChecked(settings_->maskType ==
-                            FileFilterMaskType::IgnoreLikeThis);
+    if (settings_->maskType ==
+            FileFilterMaskType::IgnoreLikeThis)
+        rbIgnore->setChecked(true);
+    else
+        rbUseOnly->setChecked(true);
+
     leFileMask->setText(settings_->fileMask);
+
+    // fileMask == "" - not safe. By default must be "*.*".
+    if (leFileMask->text().isEmpty())
+        leFileMask->setText("*.*");
 }
 
 AllSettings * Settings::getSettings() const
@@ -128,6 +136,10 @@ AllSettings * Settings::getSettings() const
               FileFilterMaskType::IgnoreLikeThis :
               FileFilterMaskType::UseOnlyLikeThis);
     settings->fileMask = leFileMask->text();
+
+    // fileMask == "" - not safe. By default must be "*.*".
+    if (settings->fileMask == "")
+        settings->fileMask = "*.*";
 
     return settings;
 }
