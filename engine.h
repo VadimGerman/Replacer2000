@@ -21,8 +21,8 @@ class Engine
     QString m_replacement;
     QQueue<QString> *m_files;
     QMap<QString, QQueue<int>*> *m_simpleResult;
-    QMap<QString, QQueue<QPair<int, QString> >*> *m_rxResult;
-//    RXResultData *m_rXResult;
+    QMap<QString, QQueue<QPair<int, QString> >*> *m_regExpResult;
+//   RegExpResultData *m_regExpResult;
 
     void simpleSearch();
     void regExSearch();
@@ -52,8 +52,10 @@ public:
     // QAbstractItemModel * getResult();
     // QString getStatistic();
 
+    void clear();
+
     QMap<QString, QQueue<int> *> *getSimpleResult();
-    QMap<QString, QQueue<QPair<int, QString> > *> *getRXResult();
+    QMap<QString, QQueue<QPair<int, QString> > *> *getRegExpResult();
 };
 
 #endif // ENGINE_H

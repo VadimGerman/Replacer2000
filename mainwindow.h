@@ -71,6 +71,7 @@ class MainWindow : public QMainWindow
     BaseSettings *m_baseSettings;
 
     void initLayouts();
+    void initSettings();
     void createActions();
     void createMenus();
 

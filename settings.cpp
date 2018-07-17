@@ -31,7 +31,7 @@ void Settings::initComponents()
 
     cbInSubDirectories = new QCheckBox("Search in sub directories");
     cbInArchives = new QCheckBox("Search in archives");
-    cbUseRegExpForFiles = new QCheckBox("Use regular expressions");
+    cbCaseSensetiveForFiles = new QCheckBox("Case Sensetive");
 
     rbIgnore = new QRadioButton("Ignore");
     rbUseOnly = new QRadioButton("Use only");
@@ -77,9 +77,9 @@ void Settings::initLayouts()
 
     vlFilesSettingsGroup->addWidget(cbInSubDirectories);
     vlFilesSettingsGroup->addWidget(cbInArchives);
-    vlFilesSettingsGroup->addWidget(cbUseRegExpForFiles);
-    vlFilesSettingsGroup->addLayout(hlUseOnlyOrIgnore);
+    vlFilesSettingsGroup->addWidget(cbCaseSensetiveForFiles);
     vlFilesSettingsGroup->addLayout(hlFileMask);
+    vlFilesSettingsGroup->addLayout(hlUseOnlyOrIgnore);
 
     hlUseOnlyOrIgnore->addWidget(rbIgnore);
     hlUseOnlyOrIgnore->addWidget(rbUseOnly);
@@ -104,7 +104,7 @@ void Settings::setSettings(const AllSettings*settings_)
     leCommentType->setText(settings_->commentType);
     cbInSubDirectories->setChecked(settings_->searchInSubDirectories);
     cbInArchives->setChecked(settings_->searchInArchives);
-    cbUseRegExpForFiles->setChecked(settings_->useRegExpForFiles);
+    cbCaseSensetiveForFiles->setChecked(settings_->caseSensetiveForFiles);
     if (settings_->maskType ==
             FileFilterMaskType::IgnoreLikeThis)
         rbIgnore->setChecked(true);
@@ -131,7 +131,7 @@ AllSettings * Settings::getSettings() const
     settings->commentType = leCommentType->text();
     settings->searchInSubDirectories = cbInSubDirectories->isChecked();
     settings->searchInArchives = cbInArchives->isChecked();
-    settings->useRegExpForFiles = cbUseRegExpForFiles->isChecked();
+    settings->caseSensetiveForFiles = cbCaseSensetiveForFiles->isChecked();
     settings->maskType = (rbIgnore->isChecked() ?
               FileFilterMaskType::IgnoreLikeThis :
               FileFilterMaskType::UseOnlyLikeThis);

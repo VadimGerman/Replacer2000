@@ -11,7 +11,7 @@ Engine::Engine()
     m_wholeWordsOnly = false;
     m_useRegExp = false;
     m_simpleResult = new QMap<QString, QQueue<int> *>;
-    m_rxResult = new QMap<QString, QQueue<QPair<int, QString> >*>;
+    m_regExpResult = new QMap<QString, QQueue<QPair<int, QString> >*>;
 }
 
 Engine::~Engine()
@@ -59,14 +59,36 @@ void Engine::replace()
     }
 }
 
+void Engine::clear()
+{
+
+    m_needle = "";
+    m_replacement = "";
+    m_files->clear();
+
+    for (auto &res : *m_simpleResult)
+        delete res;
+    m_simpleResult->clear();
+    for (auto &res: *m_regExpResult)
+        delete res;
+    m_regExpResult->clear();
+
+    m_caseSensetive = true;
+    m_ignoreWhiteSpaces = false;
+    m_doesntContain = false;
+    m_wholeWordsOnly = false;
+    m_useRegExp = false;
+    m_ignoreCommented = false;
+}
+
 QMap<QString, QQueue<int> *> *Engine::getSimpleResult()
 {
     return m_simpleResult;
 }
 
-QMap<QString, QQueue<QPair<int, QString> > *> *Engine::getRXResult()
+QMap<QString, QQueue<QPair<int, QString> > *> *Engine::getRegExpResult()
 {
-    return m_rxResult;
+    return m_regExpResult;
 }
 
 void Engine::simpleSearch()
@@ -120,7 +142,7 @@ void Engine::regExSearch()
     {}
     if (m_ignoreWhiteSpaces)
     {}
-    // m_rXResult = ...;
+    // m_regExpResult = ...;
 
 
     SearchData *searchData = new SearchData { m_needle,
@@ -142,7 +164,7 @@ void Engine::regExSearch()
             RegExpSearch *search = new RegExpSearch(searchData,
                                                     fileData,
                                                     m_caseSensetive);
-            m_rxResult->insert(path, search->search());
+            m_regExpResult->insert(path, search->search());
         }
         catch (...)
         {
@@ -191,8 +213,8 @@ void Engine::regExpReplace()
     QFile *file = new QFile();
 
     // Replace for all files in result variable.
-    for (auto it = m_rxResult->begin();
-         it != m_rxResult->end();
+    for (auto it = m_regExpResult->begin();
+         it != m_regExpResult->end();
          ++it)
     {
         rData.indexes = *it;

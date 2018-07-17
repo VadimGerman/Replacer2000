@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
     initLayouts();
     createActions();
     createMenus();
+    initSettings();
 
     QObject::connect(pbSearch, SIGNAL(clicked()), this, SLOT(searchClicked()));
     QObject::connect(pbReplace, SIGNAL(clicked()), this, SLOT(replaceClicked()));
@@ -36,15 +37,6 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(pbRemoveFD, SIGNAL(clicked()), this, SLOT(removeFDClicked()));
 
     m_engine = new Engine;
-    m_baseSettings = new BaseSettings;
-    m_baseSettings->commentType = "//";
-    m_baseSettings->fileMask = "*.*";
-    m_baseSettings->maskType = FileFilterMaskType::IgnoreLikeThis;
-    m_baseSettings->searchInArchives = false;
-    m_baseSettings->searchInSubDirectories = true;
-    m_baseSettings->useRegExpForFiles = false;
-
-    cleanAll();
 }
 
 MainWindow::~MainWindow()
@@ -91,6 +83,24 @@ void MainWindow::initLayouts()
 
     window->setLayout(main);
     this->setCentralWidget(window);
+}
+
+void MainWindow::initSettings()
+{
+    m_baseSettings = new BaseSettings;
+    m_baseSettings->commentType = "//";
+    m_baseSettings->fileMask = "*.*";
+    m_baseSettings->maskType = FileFilterMaskType::UseOnlyLikeThis;
+    m_baseSettings->searchInArchives = false;
+    m_baseSettings->searchInSubDirectories = true;
+    m_baseSettings->caseSensetiveForFiles = false;
+
+    aCaseSensetive->setChecked(true);
+    aIgnoreWhiteSpaces->setChecked(false);
+    aDoesntContain->setChecked(false);
+    aUseRegExp->setChecked(false);
+    aWholeWordsOnly->setChecked(false);
+    aIgnoreCommented->setChecked(false);
 }
 
 void MainWindow::createActions()
@@ -185,9 +195,21 @@ void MainWindow::findAllFiles(QDir dir)
         filter = filter.trimmed();
 
     dir.setNameFilters(filters);
-    dir.setFilter(QDir::Filter::NoDotAndDotDot |
-                  QDir::Filter::AllDirs |
-                  QDir::Filter::Files);
+
+    if (m_baseSettings->caseSensetiveForFiles)
+    {
+        dir.setFilter(QDir::Filter::NoDotAndDotDot |
+                      QDir::Filter::AllDirs |
+                      QDir::Filter::Files |
+                      QDir::Filter::CaseSensitive);
+    }
+    else
+    {
+        dir.setFilter(QDir::Filter::NoDotAndDotDot |
+                      QDir::Filter::AllDirs |
+                      QDir::Filter::Files);
+    }
+
     QFileInfoList eList = dir.entryInfoList();
 
     for (auto &elem : eList)
@@ -231,7 +253,7 @@ AllSettings *MainWindow::getSettings() const
 
     // Directories an files.
     settings->searchInSubDirectories = m_baseSettings->searchInSubDirectories;
-    settings->useRegExpForFiles = m_baseSettings->useRegExpForFiles;
+    settings->caseSensetiveForFiles = m_baseSettings->caseSensetiveForFiles;
     settings->searchInArchives = m_baseSettings->searchInArchives;
     settings->maskType = m_baseSettings->maskType;
     settings->fileMask = m_baseSettings->fileMask;
@@ -252,7 +274,7 @@ void MainWindow::setSettings(const AllSettings *settings_)
     // Data.
     m_baseSettings->commentType = settings_->commentType;
     m_baseSettings->searchInSubDirectories = settings_->searchInSubDirectories;
-    m_baseSettings->useRegExpForFiles = settings_->useRegExpForFiles;
+    m_baseSettings->caseSensetiveForFiles = settings_->caseSensetiveForFiles;
     m_baseSettings->searchInArchives = settings_->searchInArchives;
     m_baseSettings->maskType = settings_->maskType;
     m_baseSettings->fileMask = settings_->fileMask;
@@ -311,10 +333,10 @@ void MainWindow::searchClicked()
             findAllFiles(path);
     }
 
-    m_engine->search(); // if (...) getSimpleResult; else getRXResult();
+    m_engine->search(); // if (...) getSimpleResult; else getRegExpResult();
 
     auto result = m_engine->getSimpleResult();
-    auto rxResult = m_engine->getRXResult();
+    auto regExpResult = m_engine->getRegExpResult();
 
     // Simple.
     for (auto it = result->begin(); it != result->end(); ++it)
@@ -326,7 +348,7 @@ void MainWindow::searchClicked()
     }
 
     // Regular expressions.
-    for (auto it = rxResult->begin(); it != rxResult->end(); ++it)
+    for (auto it = regExpResult->begin(); it != regExpResult->end(); ++it)
     {
         char buffer[12] = "";
         itoa(it.value()->size(), buffer, 10);
@@ -408,7 +430,12 @@ void MainWindow::removeFDClicked()
 
 void MainWindow::cleanAll()
 {
-
+    leNeedle->clear();
+    leReplacement->clear();
+    m_resultModel->clear();
+    m_dirsAndFilesModel->clear();
+    delete m_baseSettings;
+    m_engine->clear();
 }
 
 void MainWindow::showHelp()

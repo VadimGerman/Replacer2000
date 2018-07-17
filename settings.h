@@ -40,7 +40,7 @@ class Settings : public QDialog
     QVBoxLayout *vlFilesSettingsGroup;
     QCheckBox *cbInSubDirectories;
     QCheckBox *cbInArchives;
-    QCheckBox *cbUseRegExpForFiles;
+    QCheckBox *cbCaseSensetiveForFiles;
 
     QHBoxLayout *hlUseOnlyOrIgnore;
     QRadioButton *rbIgnore;

@@ -10,7 +10,7 @@ struct BaseSettings
 {
     // Directories an files.
     bool searchInSubDirectories;
-    bool useRegExpForFiles;
+    bool caseSensetiveForFiles;
     bool searchInArchives;
 
 

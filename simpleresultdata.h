@@ -26,7 +26,7 @@ struct SimpleResultData : public SearchData
     QMap<QString, QQueue<int>> *files;
 };
 
-struct RXResultData : public SearchData
+struct RegExpResultData : public SearchData
 {
     /// TODO.
 };
